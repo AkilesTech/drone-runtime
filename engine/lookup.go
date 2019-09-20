@@ -5,6 +5,7 @@
 package engine
 
 import (
+	"log"
 	"net/url"
 	"strings"
 )
@@ -48,6 +49,14 @@ func LookupFile(spec *Spec, name string) (*File, bool) {
 // LookupAuth is a helper function that will lookup the
 // docker credentials by hostname.
 func LookupAuth(spec *Spec, domain string) (*DockerAuth, bool) {
+	if isGCRHost(domain) {
+		res, err := getCredentialsForGCR()
+		if err != nil {
+			log.Println(err)
+		}
+		return res, true
+	}
+
 	if spec.Docker == nil {
 		return nil, false
 	}
